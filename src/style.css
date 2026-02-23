@@ -37,5 +37,8 @@ body {
     left: 20px;
     transform: none;
     width: 280px;
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
   }
 }
