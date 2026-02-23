@@ -87,7 +87,7 @@ const planets = [
   },
   {
     name: "Earth",
-    radius: 1,
+    radius: 1.5,
     distance: 240,
     speed: 0.01,
     material: earthMaterial,
@@ -198,7 +198,7 @@ const planets = [
 
 const sceneSettings = {
   sunScale: 11.9, // sun's size
-  planetSizeScale: 1,
+  planetSizeScale: 0.4,
   distanceScale: 0.24,
   globalSpeed: 0.8,
   zoom: 1,
