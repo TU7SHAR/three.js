@@ -9,41 +9,41 @@ const pane = new Pane();
 const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 const loader = new THREE.CubeTextureLoader().setPath(
-  "/static/planets/cubemap_milkyway/",
+  "./static/planets/cubemap_milkyway/",
 );
 
 // geometries only here
 const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
 
 // Load textures and FIX color space
-const sunTexture = textureLoader.load("/static/planets/sun.jpg");
+const sunTexture = textureLoader.load("./static/planets/sun.jpg");
 sunTexture.colorSpace = THREE.SRGBColorSpace;
 
-const mercuryTexture = textureLoader.load("/static/planets/mercury.jpg");
+const mercuryTexture = textureLoader.load("./static/planets/mercury.jpg");
 mercuryTexture.colorSpace = THREE.SRGBColorSpace;
 
-const venusTexture = textureLoader.load("/static/planets/venus.jpg");
+const venusTexture = textureLoader.load("./static/planets/venus.jpg");
 venusTexture.colorSpace = THREE.SRGBColorSpace;
 
-const earthTexture = textureLoader.load("/static/planets/earth.jpg");
+const earthTexture = textureLoader.load("./static/planets/earth.jpg");
 earthTexture.colorSpace = THREE.SRGBColorSpace;
 
-const marsTexture = textureLoader.load("/static/planets/mars.jpg");
+const marsTexture = textureLoader.load("./static/planets/mars.jpg");
 marsTexture.colorSpace = THREE.SRGBColorSpace;
 
-const jupiterTexture = textureLoader.load("/static/planets/jupiter.jpg");
+const jupiterTexture = textureLoader.load("./static/planets/jupiter.jpg");
 jupiterTexture.colorSpace = THREE.SRGBColorSpace;
 
-const saturnTexture = textureLoader.load("/static/planets/saturn.jpg");
+const saturnTexture = textureLoader.load("./static/planets/saturn.jpg");
 saturnTexture.colorSpace = THREE.SRGBColorSpace;
 
-const uranusTexture = textureLoader.load("/static/planets/uranus.jpg");
+const uranusTexture = textureLoader.load("./static/planets/uranus.jpg");
 uranusTexture.colorSpace = THREE.SRGBColorSpace;
 
-const neptuneTexture = textureLoader.load("/static/planets/neptune.jpg");
+const neptuneTexture = textureLoader.load("./static/planets/neptune.jpg");
 neptuneTexture.colorSpace = THREE.SRGBColorSpace;
 
-const moonTexture = textureLoader.load("/static/planets/moon.jpg");
+const moonTexture = textureLoader.load("./static/planets/moon.jpg");
 moonTexture.colorSpace = THREE.SRGBColorSpace;
 
 const bgMap = await loader.loadAsync([
