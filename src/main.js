@@ -2,8 +2,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { Pane } from "tweakpane";
 import "./style.css";
-import { cubeTexture } from "three/tsl";
-import { CubeTextureLoader } from "three/webgpu";
 
 const pane = new Pane();
 const scene = new THREE.Scene();
