@@ -333,6 +333,9 @@ const rendererloop = () => {
 };
 
 async function initUniverse() {
+  const loadingScreen = document.getElementById("loading-screen");
+
+  // 1. Fetch data while the screen is showing
   const liveData = await getLivePlanetData();
   if (liveData) {
     planets.forEach((p) => {
@@ -343,9 +346,14 @@ async function initUniverse() {
       }
     });
   }
+
   updateOrbitsAndUI();
   asteroidBeltMesh = addAsteroidBelt(scene, 4500, 6000);
-  rendererloop();
-}
 
+  // 2. Wait for 3 seconds, then hide the screen and start the loop
+  setTimeout(() => {
+    loadingScreen.style.display = "none";
+    rendererloop(); // Start the animation loop after 3s
+  }, 500);
+}
 initUniverse();
