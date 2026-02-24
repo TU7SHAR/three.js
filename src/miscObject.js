@@ -1,12 +1,14 @@
 // miscObject.js
 import * as THREE from "three";
 
-export function addAsteroidBelt(scene) {
-  const asteroidCount = 2000;
-  const geometry = new THREE.IcosahedronGeometry(0.2, 0); // Double the base size
-  const material = new THREE.MeshLambertMaterial({
+// miscObject.js
+export function addAsteroidBelt(scene, innerRadius, outerRadius) {
+  const asteroidCount = 3500;
+  const geometry = new THREE.IcosahedronGeometry(1.2, 0);
+  const material = new THREE.MeshStandardMaterial({
     color: 0x888888,
-    emissive: 0x222222, // Adds a tiny bit of "fake" light so they aren't pitch black
+    emissive: 0x333333,
+    roughness: 0.9,
   });
 
   const instancedMesh = new THREE.InstancedMesh(
@@ -17,15 +19,15 @@ export function addAsteroidBelt(scene) {
   const matrix = new THREE.Matrix4();
 
   for (let i = 0; i < asteroidCount; i++) {
-    const radius = 35 + Math.random() * 20; // Ensure this is AFTER Mars but BEFORE Jupiter
+    // Use the arguments passed from main.js
+    const radius = innerRadius + Math.random() * (outerRadius - innerRadius);
     const angle = Math.random() * Math.PI * 2;
 
     const x = Math.cos(angle) * radius;
-    const y = (Math.random() - 0.5) * 2;
+    const y = (Math.random() - 0.5) * 15; // Vertical spread
     const z = Math.sin(angle) * radius;
 
-    // Increased scale range
-    const scale = Math.random() * 0.8 + 0.2;
+    const scale = Math.random() * 3.5 + 1.5;
 
     matrix.makeRotationFromEuler(
       new THREE.Euler(Math.random(), Math.random(), Math.random()),
