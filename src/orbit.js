@@ -37,18 +37,15 @@ export class OrbitEngine {
   updatePosition(planetData, orbitAngle, index) {
     const { radius, ecc } = this.getOrbitParams(planetData, index);
 
-    // 1. Start with the same XY coordinates as the EllipseCurve
     const x = Math.cos(orbitAngle) * (radius * ecc);
     const y = Math.sin(orbitAngle) * radius;
     const position = new THREE.Vector3(x, y, 0);
 
-    // 2. Apply tilt around Z-axis FIRST (Matches Geometry rotation)
     if (planetData.inclination) {
       const inclinationRad = THREE.MathUtils.degToRad(planetData.inclination);
       position.applyAxisAngle(new THREE.Vector3(0, 0, 1), inclinationRad);
     }
 
-    // 3. Apply horizontal flip around X-axis SECOND (Matches Geometry rotation)
     position.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
 
     return position;

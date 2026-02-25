@@ -1,7 +1,5 @@
-// miscObject.js
 import * as THREE from "three";
 
-// miscObject.js
 export function addAsteroidBelt(scene, innerRadius, outerRadius) {
   const asteroidCount = 3500;
   const geometry = new THREE.IcosahedronGeometry(1.2, 0);
@@ -19,12 +17,11 @@ export function addAsteroidBelt(scene, innerRadius, outerRadius) {
   const matrix = new THREE.Matrix4();
 
   for (let i = 0; i < asteroidCount; i++) {
-    // Use the arguments passed from main.js
     const radius = innerRadius + Math.random() * (outerRadius - innerRadius);
     const angle = Math.random() * Math.PI * 2;
 
     const x = Math.cos(angle) * radius;
-    const y = (Math.random() - 0.5) * 15; // Vertical spread
+    const y = (Math.random() - 0.5) * 15;
     const z = Math.sin(angle) * radius;
 
     const scale = Math.random() * 3.5 + 1.5;

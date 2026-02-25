@@ -51,7 +51,6 @@ scene.add(orbitRingsGroup);
 const moonOrbitsGroup = new THREE.Group();
 scene.add(moonOrbitsGroup);
 
-// LABEL CONTAINER
 const labelContainer = document.createElement("div");
 labelContainer.id = "planet-labels";
 document.body.appendChild(labelContainer);
@@ -157,7 +156,6 @@ function createOrbitRings(focusedIndex = null) {
 }
 
 function createMoonOrbits(planetData, planetMesh) {
-  // Clear previous moon orbits from the specific group
   while (moonOrbitsGroup.children.length > 0) {
     const child = moonOrbitsGroup.children[0];
     if (child.parent) child.parent.remove(child);
@@ -166,7 +164,7 @@ function createMoonOrbits(planetData, planetMesh) {
 
   if (!planetData.moons) return;
   planetData.moons.forEach((moon) => {
-    const radius = moon.distance * 0.5 + 15; // Increased distance to prevent clipping
+    const radius = moon.distance * 0.5 + 15;
     const curve = new THREE.EllipseCurve(
       0,
       0,
@@ -183,14 +181,13 @@ function createMoonOrbits(planetData, planetMesh) {
     geometry.applyMatrix4(matrix);
 
     const material = new THREE.LineBasicMaterial({
-      color: 0x00ffff, // Cyan moon orbits for high contrast
+      color: 0x00ffff,
       transparent: true,
       opacity: 0.5,
       blending: THREE.AdditiveBlending,
     });
     const moonOrbit = new THREE.LineLoop(geometry, material);
 
-    // Attach orbit to planet so it follows the movement
     planetMesh.add(moonOrbit);
     moonOrbitsGroup.add(moonOrbit);
   });
@@ -220,7 +217,7 @@ function focusOnTarget(mesh, data) {
       };
       moonListUI.appendChild(li);
     });
-    // Triggers Moon Orbits
+
     if (planetIdx !== -1) createMoonOrbits(data, mesh);
   } else {
     moonSidebar.style.display = "none";
@@ -289,7 +286,6 @@ const rendererloop = () => {
     planetObj.mesh.position.copy(newPos);
     planetObj.mesh.rotation.y += 0.01 * sceneSettings.globalSpeed;
 
-    // UPDATE LABELS
     const vector = new THREE.Vector3();
     planetObj.mesh.getWorldPosition(vector);
     vector.project(camera);
@@ -305,7 +301,7 @@ const rendererloop = () => {
       if (!moonMesh.orbitAngle)
         moonMesh.orbitAngle = Math.random() * Math.PI * 2;
       moonMesh.orbitAngle += 0.02 * sceneSettings.globalSpeed;
-      const mDist = planetObj.mesh.scale.x + moonData.distance * 0.1 + 5; // Fixed moon distance
+      const mDist = planetObj.mesh.scale.x + moonData.distance * 0.1 + 5;
       moonMesh.position.set(
         Math.cos(moonMesh.orbitAngle) * mDist,
         0,
@@ -367,7 +363,7 @@ async function initUniverse() {
       loadingScreen.style.display = "flex";
       loadingScreen.style.background = "#000";
     }
-    return; // Stop the entire initialization
+    return;
   }
 
   const loadingScreen = document.getElementById("loading-screen");
