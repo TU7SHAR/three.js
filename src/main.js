@@ -4,7 +4,7 @@ import { Pane } from "tweakpane";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { getLivePlanetData } from "./nasaApi";
+import { getLivePlanetData } from "./planetApi.js";
 import { planets } from "./planet";
 import { addAsteroidBelt } from "./miscObject";
 import { sunMaterial, planetMaterials, bgMap } from "./material";
