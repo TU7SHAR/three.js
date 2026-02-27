@@ -369,16 +369,16 @@ ScenePane.addBinding(sceneSettings, "orbitIntensity", {
 ScenePane.addBinding(sceneSettings, "showLabels", { label: "Planet Labels" });
 
 async function initUniverse() {
-  if (window.innerWidth < 768) {
-    const loadingScreen = document.getElementById("loading-screen");
-    if (loadingScreen) {
-      loadingScreen.innerHTML =
-        "<h1>Solar System Explorer is only available on Desktop.</h1>";
-      loadingScreen.style.display = "flex";
-      loadingScreen.style.background = "#000";
-    }
-    return;
-  }
+  // if (window.innerWidth < 768) {
+  //   const loadingScreen = document.getElementById("loading-screen");
+  //   if (loadingScreen) {
+  //     loadingScreen.innerHTML =
+  //       "<h1>Solar System Explorer is only available on Desktop.</h1>";
+  //     loadingScreen.style.display = "flex";
+  //     loadingScreen.style.background = "#000";
+  //   }
+  //   return;
+  // }
   window.cometData = initComet(scene);
   const loadingScreen = document.getElementById("loading-screen");
   try {
