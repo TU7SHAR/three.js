@@ -274,7 +274,15 @@ const rendererloop = () => {
     window.cometData.angle += 0.005 * (sceneSettings.cometSpeed || 3.9);
     const pos = engine.getCometPosition(window.cometData.angle);
     window.cometData.mesh.position.copy(pos);
-    // window.cometData.mesh.rotation.y += 0.05;
+    window.cometData.mesh.rotation.y += 0.05;
+    const vector = new THREE.Vector3();
+    window.cometData.mesh.getWorldPosition(vector);
+    vector.project(camera);
+    const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (vector.y * -0.5 + 0.5) * window.innerHeight;
+    // window.cometData.labelElement.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    // window.cometData.labelElement.style.display =
+    //   sceneSettings.showLabels && vector.z < 1 ? "block" : "none";
   }
   planetMeshes.forEach((planetObj) => {
     const planetData = planets[planetObj.index];

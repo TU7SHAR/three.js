@@ -7,6 +7,11 @@ export function initComet(scene) {
   const c = centerX;
   const b = Math.sqrt(a * a - c * c);
 
+  const label = document.createElement("div");
+  label.className = "planet-label";
+  label.innerText = "Customized Comet";
+  document.getElementById("planet-labels").appendChild(label);
+
   const cometCurve = new THREE.EllipseCurve(
     centerX,
     0,
@@ -38,5 +43,10 @@ export function initComet(scene) {
   cometMesh.name = "Comet";
   scene.add(cometMesh);
 
-  return { mesh: cometMesh, orbitLine: cometOrbitLine, angle: 0 };
+  return {
+    mesh: cometMesh,
+    orbitLine: cometOrbitLine,
+    angle: 0,
+    labelElement: label,
+  };
 }
