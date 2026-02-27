@@ -8,6 +8,7 @@ import { getLivePlanetData } from "./planetApi.js";
 import { planets } from "./planet";
 import { addAsteroidBelt } from "./miscObject";
 import { sunMaterial, planetMaterials, bgMap } from "./material";
+import { initComet } from "./comet.js";
 import { OrbitEngine } from "./orbit.js";
 import "./style.css";
 
@@ -269,7 +270,12 @@ const rendererloop = () => {
   sun.rotation.y += 0.002 * sceneSettings.globalSpeed;
   if (asteroidBeltMesh)
     asteroidBeltMesh.rotation.y += 0.0005 * sceneSettings.globalSpeed;
-
+  if (window.cometData) {
+    window.cometData.angle += 0.005 * (sceneSettings.cometSpeed || 3.9);
+    const pos = engine.getCometPosition(window.cometData.angle);
+    window.cometData.mesh.position.copy(pos);
+    // window.cometData.mesh.rotation.y += 0.05;
+  }
   planetMeshes.forEach((planetObj) => {
     const planetData = planets[planetObj.index];
     planetObj.mesh.scale.setScalar(engine.getLogScale(planetData.radius));
@@ -365,7 +371,7 @@ async function initUniverse() {
     }
     return;
   }
-
+  window.cometData = initComet(scene);
   const loadingScreen = document.getElementById("loading-screen");
   try {
     const liveData = await getLivePlanetData();

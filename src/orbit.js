@@ -33,6 +33,18 @@ export class OrbitEngine {
 
     return new THREE.Vector3(x, 0, z);
   }
+  getCometPosition(orbitAngle) {
+    const focalDistance = 2000;
+    const centerX = focalDistance / 2;
+    const a = 1500;
+    const c = centerX;
+    const b = Math.sqrt(a * a - c * c);
+
+    const x = Math.cos(orbitAngle) * a + centerX;
+    const z = Math.sin(orbitAngle) * b;
+
+    return new THREE.Vector3(x, 0, z);
+  }
 
   updatePosition(planetData, orbitAngle, index) {
     const { radius, ecc } = this.getOrbitParams(planetData, index);
