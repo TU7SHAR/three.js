@@ -1,8 +1,7 @@
-/* 1. Base Reset & Structure */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* Better padding management */
+  box-sizing: border-box;
 }
 
 html,
@@ -13,7 +12,6 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2. Reusable UI Components */
 #close-btn {
   margin-top: 10px;
   cursor: pointer;
@@ -29,35 +27,19 @@ body {
   background: #555;
 }
 
-/* 3. Info Card (Mobile First) */
 #info-card {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 350px;
-  background: rgba(0, 0, 0, 0.9);
-  padding: 20px;
-  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 15px;
+  border-radius: 20px;
   color: white;
-  z-index: 9999;
+  z-index: 10000;
+  max-height: 40vh;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 210, 255, 0.5);
   pointer-events: all;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Desktop override for Info Card */
-@media (min-width: 768px) {
-  #info-card {
-    top: 20px;
-    bottom: auto;
-    left: 20px;
-    transform: none;
-    width: 280px;
-  }
-}
-
-/* 4. Main Sidebar (Planet List) - Bottom Right */
 #sidebar {
   position: absolute;
   bottom: 20px;
@@ -93,7 +75,6 @@ body {
   padding-left: 18px;
 }
 
-/* 5. Moon Sidebar - Bottom Left */
 .moon-list-container {
   position: absolute;
   bottom: 20px;
@@ -107,7 +88,7 @@ body {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow-y: auto;
-  display: none; /* Controlled via JS */
+  display: none;
   z-index: 100;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
@@ -135,7 +116,7 @@ body {
   color: #fff;
   padding-left: 12px;
 }
-/* Sidebar Header Styling */
+
 .sidebar-header {
   padding-bottom: 12px;
   margin-bottom: 15px;
@@ -150,14 +131,12 @@ body {
   text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
 }
 
-/* Specific Moon Sidebar adjustments */
 #moon-sidebar h3 {
   font-size: 0.9em;
-  color: #ffcc00; /* Gold/Yellow for Moons */
+  color: #ffcc00;
   text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
 }
 
-/* Scrollbar Styling for that 'Explorer' look */
 #sidebar::-webkit-scrollbar,
 .moon-list-container::-webkit-scrollbar {
   width: 4px;
@@ -168,13 +147,16 @@ body {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
+
 .sun-item {
   border-left: 3px solid #ffcc00;
   background: rgba(255, 204, 0, 0.05);
 }
+
 .sun-item:hover {
   background: rgba(255, 204, 0, 0.2) !important;
 }
+
 .loader {
   border: 4px solid #111;
   border-top: 4px solid #00d2ff;
@@ -193,13 +175,14 @@ body {
     transform: rotate(360deg);
   }
 }
+
 #planet-labels {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Allows you to click through labels */
+  pointer-events: none;
   z-index: 10;
 }
 
@@ -217,5 +200,228 @@ body {
   border-radius: 4px;
   white-space: nowrap;
   user-select: none;
-  margin-top: -40px; /* Offset label above the planet */
+  margin-top: -40px;
+}
+
+@media (max-width: 768px) {
+  .moon-list-container {
+    left: 0 !important;
+    right: 0 !important;
+    /* Position it exactly above the Planet Sidebar height */
+    bottom: 25vh !important;
+    width: 100% !important;
+    max-height: 20vh !important;
+    border-radius: 0 !important; /* Flat bottom to sit on top of planet list */
+    border-top: 1px solid rgba(0, 210, 255, 0.3);
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 10px !important;
+  }
+
+  /* Make the moon items also horizontal for easy thumb-scrolling */
+  #moon-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .moon-item {
+    flex: 0 0 auto;
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    padding: 5px 12px !important;
+  }
+  #info-card {
+    top: 10px;
+    bottom: auto;
+    left: 5%;
+    width: 90%;
+    max-height: 30vh;
+  }
+
+  #sidebar {
+    width: 100% !important;
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: auto !important;
+    max-height: 25vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 10px !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+  }
+
+  .sidebar-header {
+    margin-bottom: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .sidebar-header h3 {
+    font-size: 0.8em !important;
+    text-align: center;
+  }
+
+  #planet-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 5px;
+  }
+
+  .planet-item {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 15px !important;
+    border: none !important;
+  }
+
+  .tp-dfwv {
+    width: 140px !important;
+    top: 5px !important;
+    right: 5px !important;
+    transform: scale(0.8);
+    transform-origin: top right;
+  }
+
+  #comet-pane-container {
+    transform: scale(0.8);
+    transform-origin: top left;
+    top: 5px !important;
+    left: 5px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  #info-card {
+    top: 20px;
+    bottom: auto;
+    left: 20px;
+    width: 280px;
+    max-height: 80vh;
+  }
+}
+@media (max-width: 768px) {
+  #planet-list::-webkit-scrollbar {
+    display: none;
+  }
+  #planet-list {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+#loading-screen h1 {
+  color: #00d2ff;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}
+
+.loader {
+  border: 4px solid #111;
+  border-top: 4px solid #00d2ff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+
+/* --- Mobile Fixes for Loading Screen --- */
+@media (max-width: 768px) {
+  #loading-screen h1 {
+    font-size: 1.2rem; /* Smaller text for mobile */
+    letter-spacing: 2px;
+  }
+
+  .loader {
+    width: 45px; /* Smaller spinner */
+    height: 45px;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 768px) {
+  .moon-list-container h3 {
+    display: none; /* We already know these are moons because of the context */
+  }
+}
+.sun-item {
+  border-left: 4px solid #ffcc00 !important;
+  background: rgba(255, 204, 0, 0.1) !important;
+}
+
+.sun-item strong {
+  color: #ffcc00;
+}
+
+@media (max-width: 768px) {
+  .sun-item {
+    border-left: none !important;
+    border-top: 3px solid #ffcc00 !important;
+  }
+}
+/* Container for the Left Pane */
+#comet-pane-container {
+  position: absolute;
+  top: 10px;
+  right: 30%;
+  z-index: 2000;
+  width: 250px;
+}
+
+/* Fix for Tweakpane readability and overlapping */
+.tp-dfwv {
+  background-color: rgba(0, 0, 0, 0.9) !important; /* Solid dark background */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  #comet-pane-container {
+    width: 140px;
+    top: 5px;
+    left: 5px;
+  }
+
+  /* The default Tweakpane (Right Side) */
+  .tp-dfwv:not(#comet-pane-container .tp-dfwv) {
+    width: 140px !important;
+    top: 5px !important;
+    right: 5px !important;
+  }
+
+  .tp-lblv_v {
+    font-size: 10px !important; /* Smaller text for mobile */
+  }
 }

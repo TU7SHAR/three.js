@@ -12,10 +12,16 @@ import { initComet } from "./comet.js";
 import { OrbitEngine } from "./orbit.js";
 import "./style.css";
 
-const pane = new Pane();
 const engine = new OrbitEngine();
 const scene = new THREE.Scene();
 scene.background = bgMap;
+
+const mainPane = new Pane();
+const cometPaneContainer = document.getElementById("comet-pane-container");
+const cometPane = new Pane({
+  container: cometPaneContainer,
+  title: "Comet Controls",
+});
 
 const planetListUI = document.getElementById("planet-list");
 const moonSidebar = document.getElementById("moon-sidebar");
@@ -30,13 +36,19 @@ let isZooming = false;
 const targetPosition = new THREE.Vector3();
 const lastTargetPos = new THREE.Vector3();
 const clickables = [];
+
 const sceneSettings = {
   globalSpeed: 0.2,
   bloomPass: 1.2,
   orbitIntensity: 0.1,
   showLabels: false,
 };
-let savedSpeed = sceneSettings.globalSpeed;
+
+const cometSettings = {
+  cometSpeed: 3.9,
+  orbitIntensity: 0.3,
+  showComet: true,
+};
 
 const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
 const sun = new THREE.Mesh(sphereGeometry, sunMaterial);
@@ -56,6 +68,17 @@ const labelContainer = document.createElement("div");
 labelContainer.id = "planet-labels";
 document.body.appendChild(labelContainer);
 
+const sunLi = document.createElement("li");
+sunLi.className = "planet-item sun-item";
+sunLi.innerHTML = `<strong>Sun</strong>`;
+sunLi.onclick = () =>
+  focusOnTarget(sun, {
+    name: "Sun",
+    description:
+      "The Sun is the star at the center of the Solar System. It is a nearly perfect sphere of hot plasma.",
+  });
+planetListUI.appendChild(sunLi);
+
 const planetMeshes = planets.map((planet, index) => {
   const material = planetMaterials[planet.name];
   const planetMesh = new THREE.Mesh(sphereGeometry, material);
@@ -67,6 +90,12 @@ const planetMeshes = planets.map((planet, index) => {
   label.className = "planet-label";
   label.innerText = planet.name;
   labelContainer.appendChild(label);
+
+  const li = document.createElement("li");
+  li.className = "planet-item";
+  li.innerHTML = `<strong>${planet.name}</strong>`;
+  li.onclick = () => focusOnTarget(planetMesh, planet);
+  planetListUI.appendChild(li);
 
   const moonMeshes = planet.moons.map((moon) => {
     const moonMat =
@@ -151,8 +180,7 @@ function createOrbitRings(focusedIndex = null) {
       opacity: sceneSettings.orbitIntensity,
       blending: THREE.AdditiveBlending,
     });
-    const orbitLine = new THREE.LineLoop(geometry, material);
-    orbitRingsGroup.add(orbitLine);
+    orbitRingsGroup.add(new THREE.LineLoop(geometry, material));
   });
 }
 
@@ -162,7 +190,6 @@ function createMoonOrbits(planetData, planetMesh) {
     if (child.parent) child.parent.remove(child);
     moonOrbitsGroup.remove(child);
   }
-
   if (!planetData.moons) return;
   planetData.moons.forEach((moon) => {
     const radius = moon.distance * 0.5 + 15;
@@ -180,7 +207,6 @@ function createMoonOrbits(planetData, planetMesh) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const matrix = new THREE.Matrix4().makeRotationX(Math.PI / 2);
     geometry.applyMatrix4(matrix);
-
     const material = new THREE.LineBasicMaterial({
       color: 0x00ffff,
       transparent: true,
@@ -188,7 +214,6 @@ function createMoonOrbits(planetData, planetMesh) {
       blending: THREE.AdditiveBlending,
     });
     const moonOrbit = new THREE.LineLoop(geometry, material);
-
     planetMesh.add(moonOrbit);
     moonOrbitsGroup.add(moonOrbit);
   });
@@ -203,7 +228,6 @@ function focusOnTarget(mesh, data) {
   mesh.getWorldPosition(lastTargetPos);
   const planetIdx = planets.findIndex((p) => p.name === data.name);
   createOrbitRings(planetIdx !== -1 ? planetIdx : null);
-
   moonListUI.innerHTML = "";
   if (data.moons && data.moons.length > 0) {
     moonSidebar.style.display = "block";
@@ -218,7 +242,6 @@ function focusOnTarget(mesh, data) {
       };
       moonListUI.appendChild(li);
     });
-
     if (planetIdx !== -1) createMoonOrbits(data, mesh);
   } else {
     moonSidebar.style.display = "none";
@@ -227,32 +250,19 @@ function focusOnTarget(mesh, data) {
   }
 }
 
-planets.forEach((planet, idx) => {
-  const li = document.createElement("li");
-  li.className = "planet-item";
-  li.innerHTML = `<strong>${planet.name}</strong>`;
-  li.onclick = () => focusOnTarget(planetMeshes[idx].mesh, planet);
-  planetListUI.appendChild(li);
-});
-
 document.getElementById("close-btn").addEventListener("click", () => {
   currentTarget = null;
   isZooming = false;
-
   infoCard.style.display = "none";
   moonSidebar.style.display = "none";
-
   createOrbitRings(null);
-
   while (moonOrbitsGroup.children.length > 0) {
     const child = moonOrbitsGroup.children[0];
     if (child.parent) child.parent.remove(child);
     moonOrbitsGroup.remove(child);
   }
-
   lastTargetPos.set(0, 0, 0);
   controls.target.set(0, 0, 0);
-  controls.enabled = true;
 });
 
 const rendererloop = () => {
@@ -267,23 +277,43 @@ const rendererloop = () => {
       controls.target.add(delta);
     }
   }
+
   sun.rotation.y += 0.002 * sceneSettings.globalSpeed;
   if (asteroidBeltMesh)
     asteroidBeltMesh.rotation.y += 0.0005 * sceneSettings.globalSpeed;
+
+  if (window.sunLabelElement) {
+    const sunV = new THREE.Vector3();
+    sun.getWorldPosition(sunV);
+    sunV.project(camera);
+    const sx = (sunV.x * 0.5 + 0.5) * window.innerWidth;
+    const sy = (sunV.y * -0.5 + 0.5) * window.innerHeight;
+    window.sunLabelElement.style.transform = `translate(-50%, -50%) translate(${sx}px, ${sy}px)`;
+    window.sunLabelElement.style.display =
+      sceneSettings.showLabels && sunV.z < 1 ? "block" : "none";
+  }
+  if (window.cometData && window.cometData.labelElement) {
+    const shouldShow =
+      sceneSettings.showLabels && cometSettings.showComet && vector.z < 1;
+    window.cometData.labelElement.style.display = shouldShow ? "block" : "none";
+  }
   if (window.cometData) {
-    window.cometData.angle += 0.005 * (sceneSettings.cometSpeed || 3.9);
+    window.cometData.angle += 0.005 * cometSettings.cometSpeed;
     const pos = engine.getCometPosition(window.cometData.angle);
     window.cometData.mesh.position.copy(pos);
     window.cometData.mesh.rotation.y += 0.05;
-    const vector = new THREE.Vector3();
-    window.cometData.mesh.getWorldPosition(vector);
-    vector.project(camera);
-    const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-    const y = (vector.y * -0.5 + 0.5) * window.innerHeight;
-    // window.cometData.labelElement.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-    // window.cometData.labelElement.style.display =
-    //   sceneSettings.showLabels && vector.z < 1 ? "block" : "none";
+    const cv = new THREE.Vector3();
+    window.cometData.mesh.getWorldPosition(cv);
+    cv.project(camera);
+    const cx = (cv.x * 0.5 + 0.5) * window.innerWidth;
+    const cy = (cv.y * -0.5 + 0.5) * window.innerHeight;
+    if (window.cometData.labelElement) {
+      window.cometData.labelElement.style.transform = `translate(-50%, -50%) translate(${cx}px, ${cy}px)`;
+      window.cometData.labelElement.style.display =
+        sceneSettings.showLabels && cv.z < 1 ? "block" : "none";
+    }
   }
+
   planetMeshes.forEach((planetObj) => {
     const planetData = planets[planetObj.index];
     planetObj.mesh.scale.setScalar(engine.getLogScale(planetData.radius));
@@ -300,14 +330,14 @@ const rendererloop = () => {
     planetObj.mesh.position.copy(newPos);
     planetObj.mesh.rotation.y += 0.01 * sceneSettings.globalSpeed;
 
-    const vector = new THREE.Vector3();
-    planetObj.mesh.getWorldPosition(vector);
-    vector.project(camera);
-    const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-    const y = (vector.y * -0.5 + 0.5) * window.innerHeight;
-    planetObj.labelElement.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    const pv = new THREE.Vector3();
+    planetObj.mesh.getWorldPosition(pv);
+    pv.project(camera);
+    const px = (pv.x * 0.5 + 0.5) * window.innerWidth;
+    const py = (pv.y * -0.5 + 0.5) * window.innerHeight;
+    planetObj.labelElement.style.transform = `translate(-50%, -50%) translate(${px}px, ${py}px)`;
     planetObj.labelElement.style.display =
-      sceneSettings.showLabels && vector.z < 1 ? "block" : "none";
+      sceneSettings.showLabels && pv.z < 1 ? "block" : "none";
 
     planetObj.moons.forEach((moonMesh, mIdx) => {
       const moonData = planetData.moons[mIdx];
@@ -344,42 +374,79 @@ const rendererloop = () => {
   window.requestAnimationFrame(rendererloop);
 };
 
-const ScenePane = pane.addFolder({ title: "SceneSettings", expanded: true });
-ScenePane.addBinding(sceneSettings, "globalSpeed", {
+const sceneFolder = mainPane.addFolder({
+  title: "SceneSettings",
+  expanded: true,
+});
+sceneFolder.addBinding(sceneSettings, "globalSpeed", {
   min: 0,
   max: 2,
   label: "Time Speed",
 });
-ScenePane.addBinding(sceneSettings, "bloomPass", {
-  min: 0,
-  max: 5,
-  label: "Sun Intensity",
-}).on("change", (e) => {
-  bloomPass.strength = e.value;
-});
-ScenePane.addBinding(sceneSettings, "orbitIntensity", {
-  min: 0,
-  max: 1,
-  label: "Orbit Intensity",
-}).on("change", (e) => {
-  orbitRingsGroup.children.forEach((ring) => {
-    if (ring.material) ring.material.opacity = e.value;
+sceneFolder
+  .addBinding(sceneSettings, "bloomPass", {
+    min: 0,
+    max: 5,
+    label: "Sun Intensity",
+  })
+  .on("change", (e) => {
+    bloomPass.strength = e.value;
   });
+sceneFolder
+  .addBinding(sceneSettings, "orbitIntensity", {
+    min: 0,
+    max: 1,
+    label: "Orbit Intensity",
+  })
+  .on("change", (e) => {
+    orbitRingsGroup.children.forEach((ring) => {
+      if (ring.material) ring.material.opacity = e.value;
+    });
+  });
+sceneFolder.addBinding(sceneSettings, "showLabels", { label: "Planet Labels" });
+
+cometPane.addBinding(cometSettings, "cometSpeed", {
+  min: 0,
+  max: 10,
+  label: "Comet Speed",
 });
-ScenePane.addBinding(sceneSettings, "showLabels", { label: "Planet Labels" });
+cometPane
+  .addBinding(cometSettings, "orbitIntensity", {
+    min: 0,
+    max: 1,
+    label: "Orbit Line",
+  })
+  .on("change", (e) => {
+    if (window.cometData && window.cometData.orbitLine)
+      window.cometData.orbitLine.material.opacity = e.value;
+  });
+cometPane
+  .addBinding(cometSettings, "showComet", {
+    label: "Show Comet",
+  })
+  .on("change", (e) => {
+    if (window.cometData) {
+      // Hide/Show the actual comet rock
+      window.cometData.mesh.visible = e.value;
+
+      window.cometData.orbitLine.visible = e.value;
+
+      if (window.cometData.labelElement) {
+        window.cometData.labelElement.style.visibility = e.value
+          ? "visible"
+          : "hidden";
+      }
+    }
+  });
 
 async function initUniverse() {
-  // if (window.innerWidth < 768) {
-  //   const loadingScreen = document.getElementById("loading-screen");
-  //   if (loadingScreen) {
-  //     loadingScreen.innerHTML =
-  //       "<h1>Solar System Explorer is only available on Desktop.</h1>";
-  //     loadingScreen.style.display = "flex";
-  //     loadingScreen.style.background = "#000";
-  //   }
-  //   return;
-  // }
   window.cometData = initComet(scene);
+  const sunLabel = document.createElement("div");
+  sunLabel.className = "planet-label";
+  sunLabel.innerText = "Sun";
+  labelContainer.appendChild(sunLabel);
+  window.sunLabelElement = sunLabel;
+
   const loadingScreen = document.getElementById("loading-screen");
   try {
     const liveData = await getLivePlanetData();
